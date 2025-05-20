@@ -29,11 +29,18 @@ jobs:
 
       - name: Desplegar a rama prod
         run: |
+          # Crear directorio temporal
+          mkdir -p /tmp/dist-only
+          # Copiar contenido de dist a directorio temporal
+          cp -r dist/* /tmp/dist-only/
+          # Inicializar git en directorio temporal
+          cd /tmp/dist-only
+          git init
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b prod-temp
-          git add -f dist/
-          git commit -m "Deploy: $(git rev-parse --short HEAD)"
-          git push -f origin prod-temp:prod
+          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git add .
+          git commit -m "Deploy: ${GITHUB_SHA}"
+          git push -f origin HEAD:prod
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
