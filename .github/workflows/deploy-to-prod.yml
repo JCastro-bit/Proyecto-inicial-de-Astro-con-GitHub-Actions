@@ -1,5 +1,8 @@
 name: Deploy to Production
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -26,9 +29,11 @@ jobs:
 
       - name: Desplegar a rama prod
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -b prod-temp
           git add -f dist/
           git commit -m "Deploy: $(git rev-parse --short HEAD)"
           git push -f origin prod-temp:prod
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
